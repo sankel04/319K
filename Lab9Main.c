@@ -25,6 +25,36 @@ void PLL_Init(void){ // set phase lock loop (PLL)
   Clock_Init80MHz(0);   // run this line for 80MHz
 }
 
+
+
+typedef enum {English, Spanish} Language_t;
+Language_t myLanguage=English;
+typedef enum {HELLO, GOODBYE, LANGUAGE, WELCOME,INSTRUCTION1, INSTRUCTION2,OUTRO} phrase_t;
+const char Hello_English[] ="Hello";
+const char Hello_Spanish[] ="\xADHola!";
+const char Goodbye_English[]="Goodbye";
+const char Goodbye_Spanish[]="Adi\xA2s";
+const char Language_English[]="English";
+const char Language_Spanish[]="Espa\xA4ol";
+const char Welcome_English[] ="Welcome to \n Space Invaders!";
+const char Welcome_Spanish[] ="Bienvenidos a las \n Space Invaders!";
+const char Instruction1_English[] ="> fire missile";
+const char Instruction2_English[] ="< play/pause";
+const char Instruction1_Spanish[] ="> dispara el misil";
+const char Instruction2_Spanish[] ="< jugar/pausa";
+const char Outro_English[] ="GAME OVER\n Nice Try \n Earthling";
+const char Outro_Spanish[] ="Juego terminado\n Buen intento \n terricola";
+const char *Phrases[7][2]={
+  {Hello_English,Hello_Spanish},
+  {Goodbye_English,Goodbye_Spanish},
+  {Language_English,Language_Spanish},
+   {Welcome_English,Welcome_Spanish},
+   {Instruction1_English,Instruction1_Spanish},
+   {Instruction2_English,Instruction2_Spanish},
+   {Outro_English,Outro_Spanish}
+};
+
+
 typedef enum {dead,alive} status_t;
 struct sprite{
    uint32_t x; // x coordinate
@@ -157,13 +187,12 @@ void TIMG12_IRQHandler(void){uint32_t pos,msg;
     if(player.life == dead){
         ST7735_FillScreen(ST7735_BLACK);
         ST7735_SetCursor(1, 1);
-        ST7735_OutString("GAME OVER");
-        ST7735_SetCursor(1, 2);
-        ST7735_OutString("Nice try,");
-        ST7735_SetCursor(1, 3);
-        ST7735_OutString("Earthling!");
+        ST7735_FillScreen(0x0000);   // set screen to black
+        ST7735_OutString((char *)Phrases[OUTRO][myLanguage]);
         ST7735_SetCursor(2, 4);
-        while(1){} // infinite loop
+        ST7735_OutUDec(1234);
+        while(1){
+        } // infinite loop
     }
     uint32_t x = (120*ADCin())/4095; // 1) sample slide pot 0 to 120
     uint8_t switchState = Switch_In(); // 2) read input switches
@@ -194,29 +223,7 @@ uint8_t TExaS_LaunchPadLogicPB27PB26(void){
   return (0x80|((GPIOB->DOUT31_0>>26)&0x03));
 }
 
-typedef enum {English, Spanish} Language_t;
-Language_t myLanguage=English;
-typedef enum {HELLO, GOODBYE, LANGUAGE, WELCOME,INSTRUCTION1, INSTRUCTION2} phrase_t;
-const char Hello_English[] ="Hello";
-const char Hello_Spanish[] ="\xADHola!";
-const char Goodbye_English[]="Goodbye";
-const char Goodbye_Spanish[]="Adi\xA2s";
-const char Language_English[]="English";
-const char Language_Spanish[]="Espa\xA4ol";
-const char Welcome_English[] ="Welcome to \n Space Invaders!";
-const char Welcome_Spanish[] ="Bienvenidos a las \n Space Invaders!";
-const char Instruction1_English[] ="> fire missile";
-const char Instruction2_English[] ="< play/pause";
-const char Instruction1_Spanish[] ="> dispara el misil";
-const char Instruction2_Spanish[] ="< jugar/pausa";
-const char *Phrases[6][2]={
-  {Hello_English,Hello_Spanish},
-  {Goodbye_English,Goodbye_Spanish},
-  {Language_English,Language_Spanish},
-   {Welcome_English,Welcome_Spanish},
-   {Instruction1_English,Instruction1_Spanish},
-   {Instruction2_English,Instruction2_Spanish}
-};
+
 
 void Enemy_Init(void){ int i;
     for(i=0; i<6; i++){
@@ -324,11 +331,7 @@ int main2(void){ // main2
   }
   ST7735_FillScreen(0x0000);   // set screen to black
   ST7735_SetCursor(1, 1);
-  ST7735_OutString("GAME OVER");
-  ST7735_SetCursor(1, 2);
-  ST7735_OutString("Nice try,");
-  ST7735_SetCursor(1, 3);
-  ST7735_OutString("Earthling!");
+  ST7735_OutString((char *)Phrases[OUTRO][myLanguage]);
   ST7735_SetCursor(2, 4);
   ST7735_OutUDec(1234);
   while(1){
