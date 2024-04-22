@@ -197,7 +197,7 @@ void TIMG12_IRQHandler(void){uint32_t pos,msg;
     uint32_t x = (120*ADCin())/4095; // 1) sample slide pot 0 to 120
     uint8_t switchState = Switch_In(); // 2) read input switches
     // do an if pause/play statement here
-    Move(); // 3) move sprites
+    //Move(); // 3) move sprites
     if(x != player.x){
         player.oldX = player.x;
         player.oldY = player.y;
